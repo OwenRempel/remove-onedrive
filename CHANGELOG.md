@@ -13,3 +13,5 @@ Screenshots pointing at a missing `OneDrive` folder, causing a
 - Removes sidebar node, startup entry, scheduled tasks, environment variables
 - Blocks reinstall through policy and the Default user profile
 - `-CheckOnly`, `-KeepFiles`, `-SkipUninstall` switches
+- Admin window writes `Remove-OneDrive.log` and waits for Enter before closing
+- Verified on a Windows 11 Home 25H2 PC: full run then `-CheckOnly` all green

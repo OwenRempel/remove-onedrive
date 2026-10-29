@@ -38,8 +38,9 @@ This script fixes all of it in one go.
    .\Remove-OneDrive.ps1
    ```
 
-5. Approve the UAC prompt, wait for the green "[ok]" report, then sign out and
-   back in.
+5. Approve the UAC prompt. The script runs in a new admin window; wait for the
+   green "[ok]" report, press Enter to close it, then sign out and back in.
+   A copy of the output is saved next to the script as `Remove-OneDrive.log`.
 
 If PowerShell refuses to run the script ("running scripts is disabled"), run
 this once first, in the same window:
@@ -125,6 +126,7 @@ Windows. Run the script from a normal PowerShell window on the PC itself.
 ## Files
 
 - `Remove-OneDrive.ps1` – the script. Fully commented; read it before you run it.
+- `Remove-OneDrive.log` – created by a full run; the output of the admin window.
 - `README.md` – this file.
 - `CHANGELOG.md` – what changed between versions.
 

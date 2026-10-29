@@ -58,8 +58,11 @@
 param(
     [switch]$CheckOnly,
     [switch]$KeepFiles,
-    [switch]$SkipUninstall
+    [switch]$SkipUninstall,
+    [switch]$Elevated   # internal: set when the script relaunches itself as admin
 )
+
+$LogFile = Join-Path $PSScriptRoot 'Remove-OneDrive.log'
 
 $ErrorActionPreference = 'Continue'
 Set-StrictMode -Version 2
@@ -92,12 +95,17 @@ function Test-Admin {
 # elevated run keeps the script simple.
 if (-not $CheckOnly -and -not (Test-Admin)) {
     Write-Host "Requesting administrator rights..." -ForegroundColor Yellow
-    $args = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"")
+    $args = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"", '-Elevated')
     if ($KeepFiles)     { $args += '-KeepFiles' }
     if ($SkipUninstall) { $args += '-SkipUninstall' }
     Start-Process powershell.exe -Verb RunAs -ArgumentList $args -Wait
+    Write-Host "Elevated run finished. Full output is in $LogFile" -ForegroundColor Cyan
     exit
 }
+
+# Everything below runs elevated. Keep a copy of the output, because the
+# elevated window is separate from the one the user launched from.
+Start-Transcript -Path $LogFile -Force | Out-Null
 
 # When elevated via UAC the profile is the same user, so $env:USERPROFILE is
 # still correct. Guard anyway in case someone runs it from an admin account on
@@ -359,3 +367,5 @@ Write-Ok "Done"
 Show-State
 
 Write-Host "`nFinished. Sign out and back in (or reboot) so every app picks up the new folder locations." -ForegroundColor Cyan
+Stop-Transcript | Out-Null
+if ($Elevated) { Read-Host "`nPress Enter to close this window" | Out-Null }
